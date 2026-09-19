@@ -1,6 +1,11 @@
 import style from "../../styles/landing.module.css";
 
-const NavBar = () =>{
+interface InfoBoxProps {
+    title: string;
+    text: string;
+};
+
+function NavBar(){
 
     return (
         <nav className={style.navbar}>
@@ -19,30 +24,22 @@ const NavBar = () =>{
     )
 };
 
-function MainHeading() {
-    const fidelChars = ["ሀ", "ለ", "መ", "ረ", "ሰ", "በ", "ተ", "ነ", "የ", "ከ", "ወ", "አ", "ኆ", "ዎ", "ዔ", "ዦ"];
-
+function Header() {
+    const fidelChars: string[] = ["ሀ", "ለ", "መ", "ረ", "ሰ", "በ", "ተ", "ነ", "የ", "ከ", "ወ", "አ", "ኆ", "ዎ", "ዔ", "ዦ"];
+    const fidelCharsInterval: number = 100 / fidelChars.length;
     return (
-        <div
-            style={{
-                position: 'relative', 
-                // overflow: 'hidden',  
-            }}
-        >
+        <div className={style.header_layout}>
             {/* Background */}
             {fidelChars.map((char, i) => (
-                <div
+                <div className={style.header_background}
                     key={i}
                     style={{
                         position: 'absolute',
-                        left: `${Math.random() * 100}%`,
+                        left: `${i * fidelCharsInterval}%`,
                         top: `${Math.random() * 100}%`,
-                        fontSize: '3rem',
-                        color: '#2563eb',
-                        opacity: 0.2,
-                        animation: `float ${8 + Math.random() * 4}s linear infinite`,
+                        animationDuration: `${8 + Math.random() * 4}s`,
                         animationDelay: `${i * 0.5}s`,
-                        pointerEvents: 'none'
+                     
                     }}
                 >
                     {char}
@@ -50,42 +47,44 @@ function MainHeading() {
             ))}
 
             {/* Foreground */}
-            <div
-                style={{
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    position: 'relative',
-                    zIndex: 1
-                }}
-            >
-                <h1 style={{ fontSize: '3em' }}>Learn the Fidel Script</h1>
-                <p style={{ marginTop: '40px', fontSize: '2em' }}>
-                    One letter at a time
+            <div className={style.header_foreground}>
+                <h1 className={style.header_foreground_title}>Learn the Fidel Script</h1>
+                <p className={style.header_foreground_subtitle}>
+                    Used by more than 50 million people worldwide
                 </p>
             </div>
         </div>
     );
 }
 
+function InfoBox({ title, text }: InfoBoxProps) {
+    return (
+        <div className={style.infobox}>
+            <h3 className={style.infobox_title}>{title}</h3>
+            <span className={style.infobox_text}>{text}</span>
+        </div>
+    )
+}
+
 
 export default function LandingPage(){
 
-    const firstTitle = "20+ Lessons";
-    const firstText = "Learn all the Amharic consonant families in a structured path";
+    const firstTitle: string = "200+ Characters";
+    const firstText: string = "Learn all the Amharic consonant families in a structured path";
     
-    const secondTitle = "Interactive Quizzes";
-    const secondText = "Text your recongnition with multiple-choice quizzes and review modes that reinforce previous lessons";
+    const secondTitle: string = "Interactive Exercises";
+    const secondText: string = "Navigate through a series of exercises to reinforce your learning";
 
-    const thirdTitle = "Tracing Practice";
-    const thirdText = "Build muscle memory by practicing each letter form";
+
 
     return(
         <>
             <NavBar/>
-            <MainHeading />
+            <Header />
+            <div className={style.infobox_layout}>
+                <InfoBox title={firstTitle} text={firstText} />
+                <InfoBox title={secondTitle} text={secondText} />
+            </div>
         </>
     )
 };
