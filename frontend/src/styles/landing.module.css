@@ -1,0 +1,52 @@
+/* NAVBAR */
+.navbar {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--navbar-bg);
+    padding: 10px 15px;
+}
+
+.navbar_title {
+    display: flex;
+    color: #fadc9a;
+    gap: 10px;
+}
+
+.navbar_foreign {
+    font-weight: bold;
+    font-size: 1.75em;
+    line-height: 1;
+}
+
+.navbar_english {
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.navbar_buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.navbar_button_login,
+.navbar_button_signup {
+    border-radius: 6px;
+    color:  #fadc9a;
+    font-weight: bold;
+    font-size: 1.2em;
+    padding: 6px;
+}
+
+.navbar_button_login {
+    border: 1px solid #333;
+    background-color: transparent;
+}
+
+.navbar_button_signup {
+    border: 1px solid var(--navbar-bg);
+    background-color: #3e6b75;
+}
