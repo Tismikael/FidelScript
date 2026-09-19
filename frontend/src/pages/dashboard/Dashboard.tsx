@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import letters from "../../lib/data/letters.json";
 import style from "../../styles/dashboard.module.css";
 import clsx from "clsx";
@@ -62,6 +63,7 @@ interface LessonCardProps {
     partOneDone: boolean;
     partTwoDone: boolean;
     partThreeDone: boolean;
+    onClick: () => void;
 }
 
 const statusLabel: Record<LessonStatus, string> = {
@@ -70,7 +72,7 @@ const statusLabel: Record<LessonStatus, string> = {
     COMPLETED: "Completed",
 };
 
-function LessonCard({ lessonNumber, amharicName, englishName, status, partOneDone, partTwoDone, partThreeDone }: LessonCardProps) {
+function LessonCard({ lessonNumber, amharicName, englishName, status, partOneDone, partTwoDone, partThreeDone, onClick }: LessonCardProps) {
     const locked = status === "LOCKED";
     const lessonCardStyle = clsx(
         style.card,
@@ -89,6 +91,7 @@ function LessonCard({ lessonNumber, amharicName, englishName, status, partOneDon
     return (
         <div
             className={lessonCardStyle}
+            onClick={locked ? undefined : onClick}
         >
             <div className={style.card_header}>
                 <span>Lesson {lessonNumber}</span>
@@ -119,6 +122,7 @@ function LessonCard({ lessonNumber, amharicName, englishName, status, partOneDon
 
 export default function Dashboard() {
     const { name, familyId, partNumber } = mockUser;
+    const navigate = useNavigate();
 
     return (
         <>
@@ -141,6 +145,7 @@ export default function Dashboard() {
                                 partOneDone={isPast || (isCurrent && partNumber === 2)}
                                 partTwoDone={isPast}
                                 partThreeDone={isPast}
+                                onClick={() => navigate(`/lesson/${lesson.id}`, { state: { recognitionDone: isPast } })}
                             />
                         );
                     })}
