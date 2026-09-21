@@ -4,6 +4,8 @@ import clsx from "clsx";
 import letters from "../../lib/data/letters.json";
 import type { Lesson } from "../../lib/constants/Lesson";
 import style from "../../styles/assessments/matching.module.css";
+import * as helperLesson from "../../lib/assessments/lesson"
+
 
 const shuffle = <T,>(items: T[]): T[] => {
     const copy = [...items];
@@ -19,8 +21,8 @@ export default function Matching() {
     const navigate = useNavigate();
 
     const lesson: Lesson | undefined = letters.find((item) => item.id === Number(id));
-    const getShuffledChars = () => shuffle(lesson?.letters.map((letter) => letter.char) ?? []);
-    const getShuffledLabels = () => shuffle(lesson?.letters.map((letter) => letter.label) ?? []);
+    const getShuffledChars = () => shuffle(helperLesson.generateCharArray(lesson));
+    const getShuffledLabels = () => shuffle(helperLesson.generateLabelArray(lesson));
 
     const [shuffledChars, setShuffledChars] = useState(getShuffledChars);
     const [shuffledLabels, setShuffledLabels] = useState(getShuffledLabels);

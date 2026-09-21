@@ -4,9 +4,12 @@ import clsx from "clsx";
 import letters from "../../lib/data/letters.json";
 import { RecognitionType } from "../../lib/constants/Lesson";
 import type { Question } from "../../lib/constants/Lesson";
-import { PASS_MARK, calculateScore, generateRecognitionAssessment } from "../../lib/assessments/recognition";
+import { PASS_MARK, calculateScore, generateAssessment } from "../../lib/assessments/recognition";
 import speakerImage from "../../assets/_.jpeg";
 import style from "../../styles/assessments/guess.module.css";
+import { playSound } from "../../lib/audio/generateAudio";
+import * as helperLesson from "../../lib/assessments/lesson"
+
 
 export default function GuessTheSound() {
     const { id } = useParams();
@@ -15,22 +18,21 @@ export default function GuessTheSound() {
     const lessonId = Number(id);
     const lessonExists = letters.some((item) => item.id === lessonId);
 
+    const charToPosMap: Map<string, number> = helperLesson.generateCharToPositionMap(lessonId);
+
     const [questions, setQuestions] = useState<Question[]>(
-        () => generateRecognitionAssessment(lessonId, RecognitionType.labelToChar).questions
+        () => generateAssessment(lessonId, RecognitionType.labelToChar).questions
     );
     const [answers, setAnswers] = useState<string[]>([]);
     const [current, setCurrent] = useState(0);
 
     const startQuiz = () => {
-        setQuestions(generateRecognitionAssessment(lessonId, RecognitionType.labelToChar).questions);
+        setQuestions(generateAssessment(lessonId, RecognitionType.labelToChar).questions);
         setAnswers([]);
         setCurrent(0);
     };
 
-    const playSound = () => {
-        // sound files are not added yet; question.prompt is the label whose sound should play
-    };
-
+   
     const chooseOption = (option: string) => {
         if (answers[current] !== undefined) return;
         setAnswers((prev) => {
@@ -71,7 +73,11 @@ export default function GuessTheSound() {
                     </div>
 
                     <p className={style.question_text}>Listen, then pick the character you heard</p>
-                    <button className={style.sound_button} onClick={playSound} aria-label="Play sound">
+                    <button 
+                        className={style.sound_button} 
+                        onClick={() => playSound(lessonId, charToPosMap.get(question.correctAnswer) ?? 1, question.correctAnswer)} 
+                        aria-label="Play sound"
+                    >
                         <img className={style.sound_image} src={speakerImage} alt="" />
                     </button>
                     <p className={style.sound_hint}>

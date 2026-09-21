@@ -30,10 +30,10 @@ const createCorrectList = <T,>(lessonList: T[]): T[] => {
         }
     }
     return tempList;
-}
+};
 
 
-export const generateRecognitionAssessment = (id: number, type: RecognitionType): QuestionsList => {
+export const generateAssessment = (id: number, type: RecognitionType): QuestionsList => {
     const lesson: Lesson | undefined = lettersData.find((ld) => ld.id === id);
     if (!lesson) return { questions: [] };
 

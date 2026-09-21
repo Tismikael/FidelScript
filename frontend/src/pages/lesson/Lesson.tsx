@@ -1,8 +1,9 @@
 import { useLocation, useNavigate, useParams } from "react-router";
 import clsx from "clsx";
-import letters from "../../lib/data/letters.json";
 import style from "../../styles/lesson.module.css";
 import { playSound } from "../../lib/audio/generateAudio";
+import type { Lesson } from "../../lib/constants/Lesson";
+import * as helperLesson from "../../lib/assessments/lesson";
 
 interface LetterCardProps {
     char: string;
@@ -58,7 +59,7 @@ export default function Lesson() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const lesson = letters.find((item) => item.id === Number(id));
+    const lesson: Lesson | undefined = helperLesson.findLessonData(Number(id));
     const recognitionDone: boolean = location.state?.recognitionDone ?? false;
 
     return (

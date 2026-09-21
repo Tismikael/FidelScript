@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import clsx from "clsx";
-import letters from "../../lib/data/letters.json";
+import * as helperLesson from "../../lib/assessments/lesson"
 import { RecognitionType } from "../../lib/constants/Lesson";
 import type { Question } from "../../lib/constants/Lesson";
-import { PASS_MARK, calculateScore, generateRecognitionAssessment } from "../../lib/assessments/recognition";
+import { PASS_MARK, calculateScore, generateAssessment } from "../../lib/assessments/recognition";
 import style from "../../styles/assessments/recognition.module.css";
 
 export default function Recognition() {
@@ -12,19 +12,19 @@ export default function Recognition() {
     const navigate = useNavigate();
 
     const lessonId = Number(id);
-    const lesson = letters.find((item) => item.id === lessonId);
+    const lesson = helperLesson.findLessonData(lessonId);
     const lessonExists = lesson !== undefined;
 
     const [type, setType] = useState<RecognitionType>(RecognitionType.charToLabel);
     const [questions, setQuestions] = useState<Question[]>(
-        () => generateRecognitionAssessment(lessonId, RecognitionType.charToLabel).questions
+        () => generateAssessment(lessonId, RecognitionType.charToLabel).questions
     );
     const [answers, setAnswers] = useState<string[]>([]);
     const [current, setCurrent] = useState(0);
 
     const startQuiz = (chosen: RecognitionType) => {
         setType(chosen);
-        setQuestions(generateRecognitionAssessment(lessonId, chosen).questions);
+        setQuestions(generateAssessment(lessonId, chosen).questions);
         setAnswers([]);
         setCurrent(0);
     };
