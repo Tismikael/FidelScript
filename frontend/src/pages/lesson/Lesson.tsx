@@ -2,18 +2,25 @@ import { useLocation, useNavigate, useParams } from "react-router";
 import clsx from "clsx";
 import letters from "../../lib/data/letters.json";
 import style from "../../styles/lesson.module.css";
+import { playSound } from "../../lib/audio/generateAudio";
 
 interface LetterCardProps {
     char: string;
     label: string;
+    onClick: () => void;
 }
 
-function LetterCard({ char, label }: LetterCardProps) {
+function LetterCard({ char, label, onClick }: LetterCardProps) {
     return (
         <div className={style.letter_card}>
             <h3 className={style.letter_char}>{char}</h3>
             <span className={style.letter_label}>{label}</span>
-            <button className={style.play_button}>Play</button>
+            <button    
+                className={style.play_button} 
+                onClick={onClick}
+            >
+                Play
+            </button>
         </div>
     );
 }
@@ -79,8 +86,17 @@ export default function Lesson() {
                     <div className={style.panel}>
                         <h2 className={style.section_title}>Learn the Letters</h2>
                         <div className={style.letters_grid}>
-                            {lesson.letters.map((letter) => (
-                                <LetterCard key={letter.char} char={letter.char} label={letter.label} />
+                            {lesson.letters.map((letter, index) => (
+                                <LetterCard  
+                                    key={letter.char} 
+                                    char={letter.char} 
+                                    label={letter.label} 
+                                    onClick={() => {
+                                        playSound(lesson.id, index + 1, letter.char)
+                                        console.log(`clicked button with familyid: ${lesson.id}, position: ${index + 1}, char: ${letter.char}`);
+                                    }
+                                    }
+                                />
                             ))}
                         </div>
                     </div>

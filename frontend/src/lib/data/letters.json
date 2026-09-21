@@ -141,6 +141,20 @@
   },
   {
     "id": 11,
+    "englishName": "Ve",
+    "amharicName": "ቨ",
+    "letters": [
+      { "char": "ቨ", "label": "vä" },
+      { "char": "ቩ", "label": "vu" },
+      { "char": "ቪ", "label": "vi" },
+      { "char": "ቫ", "label": "va" },
+      { "char": "ቬ", "label": "ve" },
+      { "char": "ቭ", "label": "və" },
+      { "char": "ቮ", "label": "vo" }
+    ]
+  },
+  {
+    "id": 12,
     "englishName": "Te",
     "amharicName": "ተ",
     "letters": [
@@ -154,7 +168,7 @@
     ]
   },
   {
-    "id": 12,
+    "id": 13,
     "englishName": "Che",
     "amharicName": "ቸ",
     "letters": [
@@ -168,7 +182,7 @@
     ]
   },
   {
-    "id": 13,
+    "id": 14,
     "englishName": "Hha2",
     "amharicName": "ኀ",
     "letters": [
@@ -182,7 +196,7 @@
     ]
   },
   {
-    "id": 14,
+    "id": 15,
     "englishName": "Ne",
     "amharicName": "ነ",
     "letters": [
@@ -196,7 +210,7 @@
     ]
   },
   {
-    "id": 15,
+    "id": 16,
     "englishName": "Nye",
     "amharicName": "ኘ",
     "letters": [
@@ -210,7 +224,7 @@
     ]
   },
   {
-    "id": 16,
+    "id": 17,
     "englishName": "Aleph",
     "amharicName": "አ",
     "letters": [
@@ -224,7 +238,7 @@
     ]
   },
   {
-    "id": 17,
+    "id": 18,
     "englishName": "Ke",
     "amharicName": "ከ",
     "letters": [
@@ -238,7 +252,7 @@
     ]
   },
   {
-    "id": 18,
+    "id": 19,
     "englishName": "Hwe",
     "amharicName": "ኸ",
     "letters": [
@@ -252,7 +266,7 @@
     ]
   },
   {
-    "id": 19,
+    "id": 20,
     "englishName": "We",
     "amharicName": "ወ",
     "letters": [
@@ -266,7 +280,7 @@
     ]
   },
   {
-    "id": 20,
+    "id": 21,
     "englishName": "Ayin",
     "amharicName": "ዐ",
     "letters": [
@@ -280,7 +294,7 @@
     ]
   },
   {
-    "id": 21,
+    "id": 22,
     "englishName": "Ze",
     "amharicName": "ዘ",
     "letters": [
@@ -294,7 +308,7 @@
     ]
   },
   {
-    "id": 22,
+    "id": 23,
     "englishName": "Zhe",
     "amharicName": "ዠ",
     "letters": [
@@ -308,7 +322,7 @@
     ]
   },
   {
-    "id": 23,
+    "id": 24,
     "englishName": "Ye",
     "amharicName": "የ",
     "letters": [
@@ -322,7 +336,7 @@
     ]
   },
   {
-    "id": 24,
+    "id": 25,
     "englishName": "De",
     "amharicName": "ደ",
     "letters": [
@@ -336,7 +350,7 @@
     ]
   },
   {
-    "id": 25,
+    "id": 26,
     "englishName": "Dje",
     "amharicName": "ጀ",
     "letters": [
@@ -350,7 +364,7 @@
     ]
   },
   {
-    "id": 26,
+    "id": 27,
     "englishName": "Ge",
     "amharicName": "ገ",
     "letters": [
@@ -364,7 +378,7 @@
     ]
   },
   {
-    "id": 27,
+    "id": 28,
     "englishName": "T'e",
     "amharicName": "ጠ",
     "letters": [
@@ -378,7 +392,7 @@
     ]
   },
   {
-    "id": 28,
+    "id": 29,
     "englishName": "Ch'e",
     "amharicName": "ጨ",
     "letters": [
@@ -392,7 +406,7 @@
     ]
   },
   {
-    "id": 29,
+    "id": 30,
     "englishName": "P'e",
     "amharicName": "ጰ",
     "letters": [
@@ -406,7 +420,7 @@
     ]
   },
   {
-    "id": 30,
+    "id": 31,
     "englishName": "Ts'e",
     "amharicName": "ጸ",
     "letters": [
@@ -420,7 +434,7 @@
     ]
   },
   {
-    "id": 31,
+    "id": 32,
     "englishName": "S'e",
     "amharicName": "ፀ",
     "letters": [
@@ -434,7 +448,7 @@
     ]
   },
   {
-    "id": 32,
+    "id": 33,
     "englishName": "Fe",
     "amharicName": "ፈ",
     "letters": [
@@ -448,7 +462,7 @@
     ]
   },
   {
-    "id": 33,
+    "id": 34,
     "englishName": "Pe",
     "amharicName": "ፐ",
     "letters": [
@@ -460,19 +474,5 @@
       { "char": "ፕ", "label": "pə" },
       { "char": "ፖ", "label": "po" }
     ]
-  },
-  {
-  "id": 34,
-  "englishName": "Ve",
-  "amharicName": "ቨ",
-  "letters": [
-    { "char": "ቨ", "label": "vä" },
-    { "char": "ቩ", "label": "vu" },
-    { "char": "ቪ", "label": "vi" },
-    { "char": "ቫ", "label": "va" },
-    { "char": "ቬ", "label": "ve" },
-    { "char": "ቭ", "label": "və" },
-    { "char": "ቮ", "label": "vo" }
-  ]
-}
+  }
 ]

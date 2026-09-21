@@ -1,0 +1,224 @@
+/* LAYOUT */
+.container {
+    flex: 1;
+    box-sizing: border-box;
+    padding: 0 2.5% 40px;
+    display: flex;
+    flex-direction: column;
+    background-image: url("../../assets/waterfall.jpeg"), var(--bg);
+    background-size: cover, auto;
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
+    background-blend-mode: soft-light, normal;
+}
+
+.back_button {
+    align-self: flex-start;
+    margin: 20px 0 0;
+    padding: 6px 12px;
+    border: 1px solid var(--navbar-bg);
+    border-radius: 6px;
+    background-color: var(--navbar-bg);
+    color: #fadc9a;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.back_button:hover {
+    opacity: 0.8;
+}
+
+.stage_title {
+    align-self: center;
+    margin: 50px 0 0;
+    color: var(--navbar-bg);
+    text-align: center;
+}
+
+.panel {
+    align-self: center;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 600px;
+    margin-top: 15px;
+    padding: 20px;
+    background-color: var(--navbar-bg);
+    border-radius: 10px;
+    color: #cccad4;
+    box-shadow: var(--shadow);
+}
+
+.instruction {
+    margin: 0 0 20px;
+    color: #fadc9a;
+    text-align: center;
+}
+
+/* QUESTION */
+.progress_text {
+    margin: 0 0 6px;
+    font-size: 0.85em;
+    opacity: 0.85;
+}
+
+.progress_track {
+    height: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    background-color: #3e6b75;
+    border-radius: 999px;
+}
+
+.progress_fill {
+    height: 100%;
+    background-color: #fadc9a;
+    border-radius: 999px;
+    transition: width 0.3s;
+}
+
+.question_text {
+    margin: 0;
+    opacity: 0.85;
+}
+
+/* SOUND BUTTON */
+.sound_button {
+    display: block;
+    width: 150px;
+    height: 150px;
+    margin: 20px auto 8px;
+    padding: 0;
+    overflow: hidden;
+    border: 3px solid #fadc9a;
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sound_button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 4px rgba(250, 220, 154, 0.35);
+}
+
+.sound_button:active {
+    transform: scale(0.96);
+}
+
+.sound_button:focus-visible {
+    outline: 3px solid #fadc9a;
+    outline-offset: 4px;
+}
+
+.sound_image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.sound_hint {
+    margin: 0 0 20px;
+    min-height: 1.5em;
+    font-size: 0.9em;
+    opacity: 0.85;
+}
+
+.sound_reveal {
+    color: #fadc9a;
+    font-weight: bold;
+}
+
+/* OPTIONS */
+.options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 180px));
+    justify-content: center;
+    gap: 12px;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 56px;
+    padding: 8px 14px;
+    border: 1px solid #3e6b75;
+    border-radius: 10px;
+    background: none;
+    color: #fadc9a;
+    font-size: 1.8rem;
+    font-weight: bold;
+    line-height: 1.1;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.option:hover:not(:disabled) {
+    transform: translateY(-2px);
+    border-color: #fadc9a;
+}
+
+.option:disabled {
+    cursor: default;
+}
+
+.option_correct {
+    background: linear-gradient(#366e41, #0c3b2e);
+    border-color: #45c4a0;
+}
+
+.option_incorrect {
+    background: linear-gradient(#ab2a02, #4e0e2a);
+    border-color: #ab2a02;
+}
+
+/* FOOTER + RESULTS */
+.footer {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.result {
+    margin: 0;
+    color: #fadc9a;
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+.result_hint {
+    margin: 4px 0 20px;
+    opacity: 0.85;
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.action_button {
+    padding: 8px 30px;
+    border: 1px solid #fadc9a;
+    border-radius: 6px;
+    background: linear-gradient(#ab2a02, #4e0e2a);
+    color: #fadc9a;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.action_secondary {
+    background: #3e6b75;
+}
+
+.action_button:hover:not(:disabled) {
+    opacity: 0.8;
+}
+
+.action_button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
