@@ -95,12 +95,14 @@ export default function Lesson() {
                             title="Recognition"
                             description="Multiple choice style assessment"
                             completed={recognitionDone}
+                            onStart={() => navigate(`/lesson/${lesson.id}/recognition`)}
                             locked={!recognitionDone}
                             lockedText="Complete previous assessment first"
                         />
                         <AssessmentCard 
                             title="Guess the Sound"
                             description="Hear the character, guess it right"
+                            onStart={() => navigate(`/lesson/${lesson.id}/guess`)}
                             completed={recognitionDone}
                             locked={!recognitionDone}
                             lockedText="Complete previous assessment first"

@@ -5,6 +5,7 @@ import LandingPage from './pages/landing/Landing.tsx'
 import Dashboard from './pages/dashboard/Dashboard.tsx'
 import Lesson from './pages/lesson/Lesson.tsx'
 import Matching from './pages/assessments/Matching.tsx'
+import Recognition from './pages/assessments/Recognition.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
@@ -13,6 +14,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <Route path="/dashboard" element={<Dashboard />} />
     <Route path="/lesson/:id" element={<Lesson />} />
     <Route path="/lesson/:id/matching" element={<Matching />} />
+    <Route path="/lesson/:id/recognition" element={<Recognition />} />
   </Routes>
   </BrowserRouter>
 )

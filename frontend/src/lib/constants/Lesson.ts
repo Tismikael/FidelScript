@@ -9,3 +9,20 @@ export type Lesson = {
     amharicName: string;
     letters: CLPair[];
 }
+
+
+export type Question = {
+    index: number;
+    prompt: string;
+    correctAnswer: string;
+    options: string[];
+};
+
+export type QuestionsList = {
+    questions: Question[];
+};
+
+export enum RecognitionType {
+    charToLabel,
+    labelToChar,
+}

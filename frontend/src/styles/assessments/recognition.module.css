@@ -1,0 +1,193 @@
+/* LAYOUT */
+.container {
+    flex: 1;
+    box-sizing: border-box;
+    padding: 0 2.5% 40px;
+    display: flex;
+    flex-direction: column;
+    background-image: url("../../assets/Simien-Mountains.jpeg"), var(--bg);
+    background-size: cover, auto;
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
+    background-blend-mode: soft-light, normal;
+}
+
+.back_button {
+    align-self: flex-start;
+    margin: 20px 0 0;
+    padding: 6px 12px;
+    border: 1px solid var(--navbar-bg);
+    border-radius: 6px;
+    background-color: var(--navbar-bg);
+    color: #fadc9a;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.back_button:hover {
+    opacity: 0.8;
+}
+
+.stage_title {
+    display: flex;
+    align-self: center;
+    gap: 10px;
+    margin: 100px 0 50px 0;
+    color: var(--navbar-bg);
+    text-align: center;
+    line-height: 1.2;
+    font-size: 1.6rem;
+}
+
+
+.panel {
+    align-self: center;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 600px;
+    margin-top: 15px;
+    padding: 20px;
+    background-color: var(--navbar-bg);
+    border-radius: 10px;
+    color: #cccad4;
+    box-shadow: var(--shadow);
+}
+
+.instruction {
+    margin: 0 0 20px;
+    color: #fadc9a;
+    text-align: center;
+}
+
+/* QUESTION */
+.progress_text {
+    margin: 0 0 6px;
+    font-size: 0.85em;
+    opacity: 0.85;
+}
+
+.progress_track {
+    height: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    background-color: #3e6b75;
+    border-radius: 50px;
+}
+
+.progress_fill {
+    height: 100%;
+    background-color: #fadc9a;
+    border-radius: 50px;
+    transition: width 0.3s;
+}
+
+.question_text {
+    margin: 0;
+    opacity: 0.85;
+}
+
+.prompt {
+    margin: 10px 0 20px;
+    color: #fadc9a;
+    font-size: 4rem;
+    line-height: 1.1;
+}
+
+.options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 180px));
+    justify-content: center;
+    gap: 12px;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 56px;
+    padding: 8px 14px;
+    border: 1px solid #3e6b75;
+    border-radius: 10px;
+    background: none;
+    color: #cccad4;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.option:hover:not(:disabled) {
+    transform: translateY(-2px);
+    border-color: #fadc9a;
+}
+
+.option:disabled {
+    cursor: default;
+}
+
+.option_large {
+    color: #fadc9a;
+    font-size: 1.8rem;
+    line-height: 1.1;
+}
+
+.option_correct {
+    background: linear-gradient(#366e41, #0c3b2e);
+    border-color: #45c4a0;
+    color: #fadc9a;
+}
+
+.option_incorrect {
+    background: linear-gradient(#ab2a02, #4e0e2a);
+    border-color: #ab2a02;
+    color: #fadc9a;
+}
+
+/* FOOTER + RESULTS */
+.footer {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.result {
+    margin: 0;
+    color: #fadc9a;
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+.result_hint {
+    margin: 4px 0 20px;
+    opacity: 0.85;
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.action_button {
+    padding: 8px 30px;
+    border: 1px solid #fadc9a;
+    border-radius: 6px;
+    background: linear-gradient(#ab2a02, #4e0e2a);
+    color: #fadc9a;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.action_secondary {
+    background: #3e6b75;
+}
+
+.action_button:hover:not(:disabled) {
+    opacity: 0.8;
+}
+
+.action_button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
