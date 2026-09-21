@@ -24,9 +24,10 @@ interface AssessmentCardProps {
     completed?: boolean;
     locked?: boolean;
     lockedText?: string;
+    onStart?: () => void;
 }
 
-function AssessmentCard({ title, description, completed, locked, lockedText }: AssessmentCardProps) {
+function AssessmentCard({ title, description, completed, locked, lockedText, onStart }: AssessmentCardProps) {
     const AssessmentCardStyle = clsx(style.panel, locked && style.assessment_locked);
 
     return (
@@ -39,7 +40,7 @@ function AssessmentCard({ title, description, completed, locked, lockedText }: A
             {locked ? (
                 <p className={style.assessment_text}>{lockedText}</p>
             ) : (
-                <button className={style.start_button}>Start Assessment</button>
+                <button className={style.start_button} onClick={onStart}>Start Assessment</button>
             )}
         </div>
     );
@@ -88,6 +89,7 @@ export default function Lesson() {
                             title="Matching"
                             description="Match the characters to their labels"
                             completed={recognitionDone}
+                            onStart={() => navigate(`/lesson/${lesson.id}/matching`)}
                         />
                         <AssessmentCard
                             title="Recognition"
