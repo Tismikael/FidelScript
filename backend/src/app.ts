@@ -1,19 +1,25 @@
-import express, { type Express, type Request, type Response } from 'express';
+import express, { type Express, type Request, type Response, type NextFunction } from 'express';
 import 'dotenv/config';
 import cors from 'cors';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import userRoute from './routes/userRoutes';
+import cookieParser from 'cookie-parser';
+import userRoute from './routes/user.routes';
+import progressRoute from './routes/progress.routes';
 
 const app: Express = express();
-app.use(cors());
+
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
+
+app.use(cors({ origin: FRONTEND_ORIGIN, credentials: true }));
 app.use(express.json());
-const db = drizzle(process.env.DATABASE_URL!);
+app.use(cookieParser());
 
-app.get('/', (req: Request, res: Response) => {
-    res.send('Hello World!');
+app.use('/v1/auth', userRoute);
+app.use('/v1/progress', progressRoute);
+
+app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
 });
-
-app.use('/', userRoute);
 
 app.listen(3000, () => {
     console.log('listening on port 3000');
