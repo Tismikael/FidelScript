@@ -43,3 +43,10 @@ family's seven forms before passing a short series of assessments to unlock the 
     **Recognition**, and **Guess the Sound**. Passing them all unlocks the next available letter family.
 
 ## Sneak Peak
+
+<img width="985" height="508" alt="Homescreen" src="https://github.com/user-attachments/assets/d3c73cb8-d28b-4484-95c1-dba05ccaebd8" />
+
+<img width="976" height="545" alt="Lesson" src="https://github.com/user-attachments/assets/7ab2477b-3a7d-4955-bafe-78e0cddeac30" />
+
+https://github.com/user-attachments/assets/7d27fc72-396b-439b-a869-9cd5ea747e1b 
+
