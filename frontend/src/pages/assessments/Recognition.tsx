@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import clsx from "clsx";
 import * as helperLesson from "../../lib/assessments/lesson"
@@ -6,14 +6,54 @@ import { RecognitionType } from "../../lib/constants/Lesson";
 import type { Question } from "../../lib/constants/Lesson";
 import { PASS_MARK, calculateScore, generateAssessment } from "../../lib/assessments/recognition";
 import style from "../../styles/assessments/recognition.module.css";
+import { updateUserProgress } from "../../lib/api/assessment.api";
+import { useAuth } from "../../lib/auth/useAuth";
+import { API_BASE_URL } from "../../lib/api/api";
+import { BackToNav } from "../../lib/utils/navigation";
+import { Navigation } from "../../lib/constants/Navigation";
+
+interface Progress {
+    familyId: number;
+    partCompletion: number;
+}
 
 export default function Recognition() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { currentUser, isLoading: authLoading } = useAuth();
 
     const lessonId = Number(id);
     const lesson = helperLesson.findLessonData(lessonId);
     const lessonExists = lesson !== undefined;
+
+    const [progress, setProgress] = useState<Progress | null>(null);
+
+    useEffect(() => {
+        if (authLoading) return;
+
+        if (!currentUser) {
+            navigate("/login", { replace: true });
+            return;
+        }
+
+        fetch(`${API_BASE_URL}/v1/progress/me`, {
+            headers: { Authorization: `Bearer ${currentUser.token}` },
+        })
+            .then(async (response) => {
+                if (!response.ok) throw new Error(`Failed to load progress (${response.status})`);
+                return response.json();
+            })
+            .then((data: Progress) => setProgress(data))
+            .catch(() => setProgress(null));
+    }, [currentUser, authLoading, navigate]);
+
+    const familyId = progress?.familyId;
+    const isCurrentLesson = familyId !== undefined && lessonId === familyId;
+    // partCompletion === 2 means Part 1 (Character to Label) is already passed, but Part 2 isn't yet.
+    const needsChoice = isCurrentLesson && progress?.partCompletion === 2;
+
+    const [choiceMade, setChoiceMade] = useState(false);
+    const showPicker = needsChoice && !choiceMade;
 
     const [type, setType] = useState<RecognitionType>(RecognitionType.charToLabel);
     const [questions, setQuestions] = useState<Question[]>(
@@ -29,13 +69,16 @@ export default function Recognition() {
         setCurrent(0);
     };
 
+    const choosePart = (chosen: RecognitionType) => {
+        startQuiz(chosen);
+        setChoiceMade(true);
+    };
+
     const chooseOption = (option: string) => {
         if (answers[current] !== undefined) return;
         setAnswers((prev) => {
             const next = [...prev];
-            console.log('next has', next);
             next[current] = option;
-            console.log('now next has', next);
             return next;
         });
     };
@@ -53,6 +96,16 @@ export default function Recognition() {
     const passed = score >= PASS_MARK;
     const completedAll = passed && !charToLabel;
 
+    const navType = Navigation.lesson;
+
+    useEffect(() => {
+        if (passed && isCurrentLesson && currentUser) {
+            updateUserProgress(currentUser.token).catch((err) => {
+                console.error("Failed to record Recognition completion:", err);
+            });
+        }
+    }, [passed, isCurrentLesson, currentUser]);
+
     const resultTitle = completedAll ? "Assessment complete!" : passed ? "Great job!" : "Keep practicing";
     const resultHint = completedAll
         ? "You passed both quizzes."
@@ -60,13 +113,22 @@ export default function Recognition() {
             ? "You passed Character to Label. Next up: Label to Character."
             : `You need ${PASS_MARK} correct to pass.`;
 
+    if (authLoading || (!progress && currentUser)) {
+        return (
+            <div className={style.container}>
+                <BackToNav navType={navType} onClick={() => navigate(`/lesson/${lessonId}`)}/>
+                <div className={style.panel}><p>Loading...</p></div>
+            </div>
+        );
+    }
+
+    if (!currentUser) return null;
+
     return (
         <div className={style.container}>
-            <button className={style.back_button} onClick={() => navigate("/dashboard")}>
-                ⬅ Back to Dashboard
-            </button>
+             <BackToNav navType={navType} onClick={() => navigate(`/lesson/${lessonId}`)}/>
 
-            {lessonExists && (
+            {lessonExists && !showPicker && (
                 <h2 className={style.stage_title}>
                     Part {stage}: From <span className={style.stage_sample}>{sampleText}</span>
                 </h2>
@@ -74,6 +136,24 @@ export default function Recognition() {
 
             {!lessonExists ? (
                 <div className={style.panel}>Lesson not found.</div>
+            ) : showPicker ? (
+                <div className={style.panel}>
+                    <h2 className={style.instruction}>Welcome back!</h2>
+                    <p className={style.result_hint}>
+                        You've already passed Part 1 (Character to Label). Retake it, or continue to Part 2.
+                    </p>
+                    <div className={style.actions}>
+                        <button className={style.action_button} onClick={() => choosePart(RecognitionType.labelToChar)}>
+                            Continue to Part 2
+                        </button>
+                        <button
+                            className={clsx(style.action_button, style.action_secondary)}
+                            onClick={() => choosePart(RecognitionType.charToLabel)}
+                        >
+                            Retake Part 1
+                        </button>
+                    </div>
+                </div>
             ) : question ? (
                 <div className={style.panel}>
                     <p className={style.progress_text}>
@@ -142,7 +222,16 @@ export default function Recognition() {
                         )}
                         {completedAll && (
                             <>
-                                <button className={style.action_button} onClick={() => navigate(`/lesson/${lessonId}`)}>
+                                <button
+                                    className={style.action_button}
+                                    onClick={() => navigate(`/lesson/${lessonId}/guess`, { state: { familyId } })}
+                                >
+                                    Start Guess the Sound
+                                </button>
+                                <button
+                                    className={clsx(style.action_button, style.action_secondary)}
+                                    onClick={() => navigate(`/lesson/${lessonId}`)}
+                                >
                                     Back to Lesson
                                 </button>
                                 <button

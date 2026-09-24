@@ -1,14 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import letters from "../../lib/data/letters.json";
 import style from "../../styles/dashboard.module.css";
 import clsx from "clsx";
+import { useAuth } from "../../lib/auth/useAuth";
+import { API_BASE_URL } from "../../lib/api/api";
+import CircularProgress from "@mui/material/CircularProgress";
 
 type LessonStatus = "LOCKED" | "IN_PROGRESS" | "COMPLETED";
 
-const mockUser = { name: "John", familyId: 4, partNumber: 2 };
+const PARTS_PER_LESSON = 4;
 
-function NavBar({ name }: { name: string }) {
+interface Progress {
+    familyId: number;
+    partCompletion: number;
+}
+
+function NavBar({ name, onLogout }: { name: string; onLogout: () => void }) {
     const [open, setOpen] = useState(false);
     const navbarAvatarStyle = clsx(style.avatar, open && style.avatar_open);
 
@@ -33,7 +41,7 @@ function NavBar({ name }: { name: string }) {
                 {open && (
                     <div className={style.menu}>
                         <button className={style.menu_item} onClick={() => setOpen(false)}>Profile</button>
-                        <button className={style.menu_item} onClick={() => setOpen(false)}>Logout</button>
+                        <button className={style.menu_item} onClick={onLogout}>Logout</button>
                     </div>
                 )}
             </div>
@@ -60,9 +68,7 @@ interface LessonCardProps {
     amharicName: string;
     englishName: string;
     status: LessonStatus;
-    partOneDone: boolean;
-    partTwoDone: boolean;
-    partThreeDone: boolean;
+    partsCompleted: number;
     onClick: () => void;
 }
 
@@ -72,7 +78,7 @@ const statusLabel: Record<LessonStatus, string> = {
     COMPLETED: "Completed",
 };
 
-function LessonCard({ lessonNumber, amharicName, englishName, status, partOneDone, partTwoDone, partThreeDone, onClick }: LessonCardProps) {
+function LessonCard({ lessonNumber, amharicName, englishName, status, partsCompleted, onClick }: LessonCardProps) {
     const locked = status === "LOCKED";
     const lessonCardStyle = clsx(
         style.card,
@@ -83,10 +89,6 @@ function LessonCard({ lessonNumber, amharicName, englishName, status, partOneDon
         style.badge,
         status === "COMPLETED" && style.badge_completed
     );
-
-    const partOneStyle = clsx(style.part, partOneDone && style.part_done);
-    const partTwoStyle = clsx(style.part, partTwoDone && style.part_done);
-    const partThreeStyle = clsx(style.part, partThreeDone && style.part_done);
 
     return (
         <div
@@ -105,15 +107,11 @@ function LessonCard({ lessonNumber, amharicName, englishName, status, partOneDon
                 <small>Complete lesson {lessonNumber - 1} to unlock</small>
             ) : (
                 <div className={style.parts}>
-                    <span className={partOneStyle}>
-                        {partOneDone ? "✓ " : ""}Part 1
-                    </span>
-                    <span className={partTwoStyle}>
-                        {partTwoDone ? "✓ " : ""}Part 2
-                    </span>
-                    <span className={partThreeStyle}>
-                        {partThreeDone ?  "✓ " : ""}Part 3
-                    </span>
+                    {Array.from({ length: PARTS_PER_LESSON }, (_, i) => i < partsCompleted).map((done, i) => (
+                        <span key={i} className={clsx(style.part, done && style.part_done)}>
+                            {done ? "✓ " : ""}Part {i + 1}
+                        </span>
+                    ))}
                 </div>
             )}
         </div>
@@ -121,19 +119,71 @@ function LessonCard({ lessonNumber, amharicName, englishName, status, partOneDon
 }
 
 export default function Dashboard() {
-    const { name, familyId, partNumber } = mockUser;
+    const { currentUser, isLoading: authLoading, logout } = useAuth();
     const navigate = useNavigate();
+    const [progress, setProgress] = useState<Progress | null>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (authLoading) return;
+
+        if (!currentUser) {
+            navigate("/login", { replace: true });
+            return;
+        }
+
+        fetch(`${API_BASE_URL}/v1/progress/me`, {
+            headers: { Authorization: `Bearer ${currentUser.token}` },
+        })
+            .then(async (response) => {
+                if (!response.ok) throw new Error(`Failed to load progress (${response.status})`);
+                return response.json();
+            })
+            .then((data: Progress) => setProgress(data))
+            .catch(() => setError("Couldn't load your progress. Please try logging in again."));
+    }, [currentUser, authLoading, navigate]);
+
+    const handleLogout = () => {
+        logout();
+        navigate("/");
+    };
+
+    if (!currentUser) return null;
+
+    if (error) {
+        return (
+            <>
+                <NavBar name={currentUser.username} onLogout={handleLogout} />
+                <div className={style.container}><p>{error}</p></div>
+            </>
+        );
+    }
+
+    if (!progress) {
+        return (
+            <>
+                <NavBar name={currentUser.username} onLogout={handleLogout} />
+                <div className={style.container}>
+                        <CircularProgress size={70} aria-label="Loading" sx={{ color: 'var(--navbar-bg)'}}/>
+                </div>
+            </>
+        );
+    }
+
+    const { familyId, partCompletion } = progress;
 
     return (
         <>
-            <NavBar name={name} />
+            <NavBar name={currentUser.username} onLogout={handleLogout} />
             <div className={style.container}>
                 <ProgressBar completed={familyId - 1} total={letters.length} />
                 <div className={style.grid}>
                     {letters.map((lesson) => {
                         const isPast = lesson.id < familyId;
                         const isCurrent = lesson.id === familyId;
-                        const status: LessonStatus = isPast ? "COMPLETED" : isCurrent ? "IN_PROGRESS" : "LOCKED";
+                        const isFullyDone = isPast || (isCurrent && partCompletion === PARTS_PER_LESSON);
+                        const status: LessonStatus = isFullyDone ? "COMPLETED" : isCurrent ? "IN_PROGRESS" : "LOCKED";
+                        const partsCompleted = isFullyDone ? PARTS_PER_LESSON : isCurrent ? partCompletion : 0;
 
                         return (
                             <LessonCard
@@ -142,10 +192,8 @@ export default function Dashboard() {
                                 amharicName={lesson.amharicName}
                                 englishName={lesson.englishName}
                                 status={status}
-                                partOneDone={isPast || (isCurrent && partNumber === 2)}
-                                partTwoDone={isPast}
-                                partThreeDone={isPast}
-                                onClick={() => navigate(`/lesson/${lesson.id}`, { state: { recognitionDone: isPast } })}
+                                partsCompleted={partsCompleted}
+                                onClick={() => navigate(`/lesson/${lesson.id}`, { state: { recognitionDone: isFullyDone } })}
                             />
                         );
                     })}

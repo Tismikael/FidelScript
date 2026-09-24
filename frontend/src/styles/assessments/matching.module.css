@@ -160,6 +160,28 @@
     cursor: default;
 }
 
+.actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.continue_button {
+    padding: 8px 30px;
+    border: 1px solid #fadc9a;
+    border-radius: 6px;
+    background: #3e6b75;
+    color: #fadc9a;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.continue_button:hover {
+    opacity: 0.8;
+}
+
 /* ENTRANCE */
 .option_enter {
     animation: optionEnter 0.4s ease-out backwards;

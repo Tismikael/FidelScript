@@ -1,10 +1,14 @@
 import { useState, useMemo } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import clsx from "clsx";
 import letters from "../../lib/data/letters.json";
 import type { Lesson } from "../../lib/constants/Lesson";
 import style from "../../styles/assessments/matching.module.css";
 import * as helperLesson from "../../lib/assessments/lesson"
+import { updateUserProgress } from "../../lib/api/assessment.api";
+import { useAuth } from "../../lib/auth/useAuth";
+import { BackToNav } from "../../lib/utils/navigation";
+import { Navigation } from "../../lib/constants/Navigation";
 
 
 const shuffle = <T,>(items: T[]): T[] => {
@@ -19,8 +23,14 @@ const shuffle = <T,>(items: T[]): T[] => {
 export default function Matching() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const { currentUser } = useAuth();
 
-    const lesson: Lesson | undefined = letters.find((item) => item.id === Number(id));
+    const lessonId = Number(id);
+    const familyId = location.state?.familyId as number | undefined;
+    const isCurrentLesson = familyId !== undefined && lessonId === familyId;
+
+    const lesson: Lesson | undefined = letters.find((item) => item.id === lessonId);
     const getShuffledChars = () => shuffle(helperLesson.generateCharArray(lesson));
     const getShuffledLabels = () => shuffle(helperLesson.generateLabelArray(lesson));
 
@@ -38,6 +48,9 @@ export default function Matching() {
     const total = lesson?.letters.length ?? 0;
     const allPaired = Object.keys(pairs).length === total;
     const score = lesson?.letters.filter((letter) => pairs[letter.char] === letter.label).length ?? 0;
+
+    const passed = score === total;
+    const navType = Navigation.lesson;
 
     const truePairs: Record<string, string> = useMemo(
         () => Object.fromEntries(lesson?.letters.map((letter) => [letter.char, letter.label]) ?? []),
@@ -68,12 +81,20 @@ export default function Matching() {
         setShuffledLabels(getShuffledLabels());
     };
 
+    const submit = () => {
+        setSubmitted(true);
+
+        if (passed && isCurrentLesson && currentUser) {
+            updateUserProgress(currentUser.token).catch((err) => {
+                console.error("Failed to record Matching completion:", err);
+            });
+        }
+    };
+
     return (
         <div className={style.container}>
-            <button className={style.back_button} onClick={() => navigate("/dashboard")}>
-                ⬅ Back to Dashboard
-            </button>
 
+            <BackToNav navType={navType} onClick={() => navigate(`/lesson/${lessonId}`)}/>
             {!lesson ? (
                 <div className={style.panel}>Lesson not found.</div>
             ) : (
@@ -138,13 +159,23 @@ export default function Matching() {
                                 You matched {score} of {total} correctly
                             </p>
                         )}
-                        <button
-                            className={style.submit_button}
-                            disabled={!submitted && !allPaired}
-                            onClick={submitted ? retry : () => setSubmitted(true)}
-                        >
-                            {submitted ? "Try Again" : "Submit"}
-                        </button>
+                        <div className={style.actions}>
+                            <button
+                                className={style.submit_button}
+                                disabled={!submitted && !allPaired}
+                                onClick={submitted ? retry : submit}
+                            >
+                                {submitted ? "Try Again" : "Submit"}
+                            </button>
+                            {submitted && passed && (
+                                <button
+                                    className={style.continue_button}
+                                    onClick={() => navigate(`/lesson/${lessonId}/recognition`, { state: { familyId } })}
+                                >
+                                    Start Recognition
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}

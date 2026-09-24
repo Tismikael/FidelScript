@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router";
 import clsx from "clsx";
 import letters from "../../lib/data/letters.json";
 import { RecognitionType } from "../../lib/constants/Lesson";
@@ -9,13 +9,23 @@ import speakerImage from "../../assets/_.jpeg";
 import style from "../../styles/assessments/guess.module.css";
 import { playSound } from "../../lib/audio/generateAudio";
 import * as helperLesson from "../../lib/assessments/lesson"
+import { updateUserProgress } from "../../lib/api/assessment.api";
+import { useAuth } from "../../lib/auth/useAuth";
+import { BackToNav } from "../../lib/utils/navigation";
+import { Navigation } from "../../lib/constants/Navigation";
+
 
 
 export default function GuessTheSound() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const { currentUser } = useAuth();
 
     const lessonId = Number(id);
+    const familyId = location.state?.familyId as number | undefined;
+    const isCurrentLesson = familyId !== undefined && lessonId === familyId;
+
     const lessonExists = letters.some((item) => item.id === lessonId);
 
     const charToPosMap: Map<string, number> = helperLesson.generateCharToPositionMap(lessonId);
@@ -50,12 +60,21 @@ export default function GuessTheSound() {
     const score = calculateScore(questions, answers);
     const passed = score >= PASS_MARK;
 
+    const navType = Navigation.lesson;
+
+
+    useEffect(() => {
+        if (passed && isCurrentLesson && currentUser) {
+            updateUserProgress(currentUser.token).catch((err) => {
+                console.error("Failed to record Guess the Sound completion:", err);
+            });
+        }
+    }, [passed, isCurrentLesson, currentUser]);
+
     return (
         <div className={style.container}>
-            <button className={style.back_button} onClick={() => navigate("/dashboard")}>
-                ⬅ Back to Dashboard
-            </button>
 
+            <BackToNav navType={navType} onClick={() => navigate(`/lesson/${lessonId}`)}/>
             {lessonExists && <h2 className={style.stage_title}>Guess the Sound</h2>}
 
             {!lessonExists ? (

@@ -118,7 +118,6 @@
 }
 
 /* assessment */
-
 .assessment_layout {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -133,6 +132,17 @@
     }
 
 
+}
+
+.assessment_card {
+    display: flex;
+    flex-direction: column;
+    min-height: 175px;
+}
+
+.assessment_footer {
+    margin-top: auto;
+    padding-top: 15px;
 }
 
 .assessment_header {
@@ -157,7 +167,7 @@
 }
 
 .assessment_text {
-    margin: 4px 0 0;
+    margin: 15px 0 0;
     opacity: 0.85;
 }
 
@@ -166,7 +176,6 @@
 }
 
 .start_button {
-    margin-top: 15px;
     padding: 8px 20px;
     border: 1px solid #fadc9a;
     border-radius: 6px;

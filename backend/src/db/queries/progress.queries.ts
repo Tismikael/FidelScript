@@ -5,8 +5,6 @@ import { PgAsyncTransaction } from 'drizzle-orm/pg-core';
 import { db } from '../index';
 import { progress, type NewProgress, type Progress } from '../schema';
 
-// The curriculum has 34 letter families (see frontend/src/lib/data/letters.json),
-// and each lesson has 4 assessment parts: Matching, Recognition pt 1, Recognition pt 2, Guess the Sound.
 export const MAX_FAMILY_ID = 34;
 export const PARTS_PER_LESSON = 4;
 

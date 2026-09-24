@@ -2,6 +2,7 @@ import {type Request, type Response, type NextFunction } from 'express';
 import { eq } from "drizzle-orm";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import ms from "ms";
 import { db } from '../db';
 import { users } from '../db/schema';
 import * as userQueries from '../db/queries/users.queries';
@@ -23,6 +24,7 @@ const setRefreshCookie = (res: Response, refreshToken: string) =>
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
+        maxAge: ms(authConfig.refresh_secret_expiration_time as ms.StringValue),
     });
 
 const registerUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -88,7 +90,43 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
 
 }
 
+const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.userId!;
+
+        const [user] = await db
+            .select()
+            .from(users)
+            .where(eq(users.id, userId))
+            .limit(1);
+
+        if (!user) {
+            return Send.unauthorized(res, null);
+        }
+
+        const accessToken = signAccessToken(user.id);
+        const newRefreshToken = signRefreshToken(user.id);
+
+        return setRefreshCookie(res, newRefreshToken)
+            .status(200)
+            .json({ userId: user.id, username: user.username, email: user.email, token: accessToken });
+    } catch (err) {
+        next(err);
+    }
+}
+
+const logoutUser = async (_req: Request, res: Response) => {
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+    });
+    return res.status(200).json({ message: "Logged out" });
+}
+
 export {
     registerUser,
-    loginUser
+    loginUser,
+    refreshToken,
+    logoutUser,
 }

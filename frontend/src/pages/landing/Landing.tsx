@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router";
 import style from "../../styles/landing.module.css";
 
 interface InfoBoxProps {
@@ -6,6 +7,7 @@ interface InfoBoxProps {
 };
 
 function NavBar(){
+    const navigate = useNavigate();
 
     return (
         <nav className={style.navbar}>
@@ -17,8 +19,8 @@ function NavBar(){
                     </div>
             </div>
             <div className={style.navbar_buttons}>
-                <button className={style.navbar_button_login}>Login</button>
-                <button className={style.navbar_button_signup}>Signup</button>
+                <button className={style.navbar_button_login} onClick={() => navigate("/login")}>Login</button>
+                <button className={style.navbar_button_signup} onClick={() => navigate("/signup")}>Signup</button>
             </div>
         </nav>
     )
