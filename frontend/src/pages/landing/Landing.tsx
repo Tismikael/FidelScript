@@ -40,8 +40,6 @@ function Header() {
                         left: `${i * fidelCharsInterval}%`,
                         top: `${Math.random() * 100}%`,
                         animationDuration: `${8 + Math.random() * 4}s`,
-                        animationDelay: `${i * 0.5}s`,
-                     
                     }}
                 >
                     {char}

@@ -71,7 +71,17 @@ class Send {
             data,
         });
         return;
-    } 
+    }
+
+    static tooManyRequests(res: Response, data: any, message = "Too many requests") {
+        res.status(429).json({
+            ok: false,
+            message,
+            data,
+        });
+        return;
+    }
+
 }
 
 export default Send;

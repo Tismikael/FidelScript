@@ -13,17 +13,17 @@ import GuessTheSound from './pages/assessments/GuessTheSound.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <AuthProvider>
-  <BrowserRouter>
-  <Routes>
-    <Route path="/" element={<LandingPage />} />
-    <Route path="/login" element={<Login />} />
-    <Route path="/signup" element={<Signup />} />
-    <Route path="/dashboard" element={<Dashboard />} />
-    <Route path="/lesson/:id" element={<Lesson />} />
-    <Route path="/lesson/:id/matching" element={<Matching />} />
-    <Route path="/lesson/:id/recognition" element={<Recognition />} />
-    <Route path="/lesson/:id/guess" element={<GuessTheSound />} />
-  </Routes>
-  </BrowserRouter>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/lesson/:id" element={<Lesson />} />
+        <Route path="/lesson/:id/matching" element={<Matching />} />
+        <Route path="/lesson/:id/recognition" element={<Recognition />} />
+        <Route path="/lesson/:id/guess" element={<GuessTheSound />} />
+      </Routes>
+    </BrowserRouter>
   </AuthProvider>
 )

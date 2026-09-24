@@ -40,7 +40,7 @@ function NavBar({ name, onLogout }: { name: string; onLogout: () => void }) {
                 </button>
                 {open && (
                     <div className={style.menu}>
-                        <button className={style.menu_item} onClick={() => setOpen(false)}>Profile</button>
+                        {/* <button className={style.menu_item} onClick={() => setOpen(false)}>Profile</button> */}
                         <button className={style.menu_item} onClick={onLogout}>Logout</button>
                     </div>
                 )}

@@ -4,6 +4,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import userRoute from './routes/user.routes';
 import progressRoute from './routes/progress.routes';
+import { apiLimiter } from './config/rateLimit.config';
 
 const app: Express = express();
 
@@ -12,6 +13,7 @@ const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
 app.use(cors({ origin: FRONTEND_ORIGIN, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(apiLimiter);
 
 app.use('/v1/auth', userRoute);
 app.use('/v1/progress', progressRoute);
