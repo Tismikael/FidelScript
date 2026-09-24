@@ -19,7 +19,7 @@
 ## About The Project
 
 Fidel Learn is not meant to replace traditional language learning — it's meant to lower the
-barrier to entry for people who never had the chance to learn the Fidel script growing up.
+barrier to entry for people interested in learning the Fidel script.
 Users work through the script one letter family at a time (34 families in total), learning each
 family's seven forms before passing a short series of assessments to unlock the next.
 
