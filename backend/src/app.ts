@@ -15,6 +15,10 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(apiLimiter);
 
+app.get('/health', (_req, res) => {
+    res.status(200).json({ ok: true });
+});
+
 app.use('/v1/auth', userRoute);
 app.use('/v1/progress', progressRoute);
 
