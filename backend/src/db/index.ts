@@ -4,6 +4,6 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 export const db = drizzle({
     connection: {
         connectionString: process.env.DATABASE_URL!,
-        ssl: process.env.NODE_ENV === 'production',
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
     },
 });

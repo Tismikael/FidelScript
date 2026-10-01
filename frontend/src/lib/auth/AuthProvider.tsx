@@ -10,7 +10,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const logout = () => {
         setCurrentUser(null);
         fetch(`${API_BASE_URL}/v1/auth/logout`, { method: "POST", credentials: "include" }).catch(() => {
-            // best-effort — the local session is already cleared either way
         });
     };
 
@@ -25,7 +24,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setCurrentUser(user);
             })
             .catch(() => {
-                // no valid refresh cookie (or the backend is unreachable) — stay logged out
             })
             .finally(() => setIsLoading(false));
     }, []);
