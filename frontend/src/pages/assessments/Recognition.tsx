@@ -1,51 +1,27 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import clsx from "clsx";
-import * as helperLesson from "../../lib/assessments/lesson"
+import * as helperLesson from "../../lib/utils/assessments/lesson"
 import { RecognitionType } from "../../lib/constants/Lesson";
 import type { Question } from "../../lib/constants/Lesson";
-import { PASS_MARK, calculateScore, generateAssessment } from "../../lib/assessments/recognition";
+import { PASS_MARK, calculateScore, generateAssessment } from "../../lib/utils/assessments/recognition";
 import style from "../../styles/assessments/recognition.module.css";
 import { updateUserProgress } from "../../lib/api/assessment.api";
-import { useAuth } from "../../lib/auth/useAuth";
-import { API_BASE_URL } from "../../lib/api/api";
+import { useLessonGuard } from "../../lib/context/progress/useLessonGuard";
+import { useProgress } from "../../lib/context/progress/useProgress";
 import { BackToNav } from "../../lib/utils/navigation";
 import { Navigation } from "../../lib/constants/Navigation";
-
-interface Progress {
-    familyId: number;
-    partCompletion: number;
-}
 
 export default function Recognition() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { currentUser, isLoading: authLoading } = useAuth();
 
     const lessonId = Number(id);
     const lesson = helperLesson.findLessonData(lessonId);
     const lessonExists = lesson !== undefined;
 
-    const [progress, setProgress] = useState<Progress | null>(null);
-
-    useEffect(() => {
-        if (authLoading) return;
-
-        if (!currentUser) {
-            navigate("/login", { replace: true });
-            return;
-        }
-
-        fetch(`${API_BASE_URL}/v1/progress/me`, {
-            headers: { Authorization: `Bearer ${currentUser.token}` },
-        })
-            .then(async (response) => {
-                if (!response.ok) throw new Error(`Failed to load progress (${response.status})`);
-                return response.json();
-            })
-            .then((data: Progress) => setProgress(data))
-            .catch(() => setProgress(null));
-    }, [currentUser, authLoading, navigate]);
+    const { currentUser, progress, isReady } = useLessonGuard(lessonId);
+    const { refreshProgress } = useProgress();
 
     const familyId = progress?.familyId;
     const isCurrentLesson = familyId !== undefined && lessonId === familyId;
@@ -100,11 +76,13 @@ export default function Recognition() {
 
     useEffect(() => {
         if (passed && isCurrentLesson && currentUser) {
-            updateUserProgress(currentUser.token).catch((err) => {
-                console.error("Failed to record Recognition completion:", err);
-            });
+            updateUserProgress(currentUser.token)
+                .then(() => refreshProgress())
+                .catch((err) => {
+                    console.error("Failed to record Recognition completion:", err);
+                });
         }
-    }, [passed, isCurrentLesson, currentUser]);
+    }, [passed, isCurrentLesson, currentUser, refreshProgress]);
 
     const resultTitle = completedAll ? "Assessment complete!" : passed ? "Great job!" : "Keep practicing";
     const resultHint = completedAll
@@ -113,7 +91,7 @@ export default function Recognition() {
             ? "You passed Character to Label. Next up: Label to Character."
             : `You need ${PASS_MARK} correct to pass.`;
 
-    if (authLoading || (!progress && currentUser)) {
+    if (!isReady) {
         return (
             <div className={style.container}>
                 <BackToNav navType={navType} onClick={() => navigate(`/lesson/${lessonId}`)}/>
@@ -121,8 +99,6 @@ export default function Recognition() {
             </div>
         );
     }
-
-    if (!currentUser) return null;
 
     return (
         <div className={style.container}>
@@ -224,7 +200,7 @@ export default function Recognition() {
                             <>
                                 <button
                                     className={style.action_button}
-                                    onClick={() => navigate(`/lesson/${lessonId}/guess`, { state: { familyId } })}
+                                    onClick={() => navigate(`/lesson/${lessonId}/guess`)}
                                 >
                                     Start Guess the Sound
                                 </button>

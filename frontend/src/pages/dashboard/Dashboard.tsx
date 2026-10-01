@@ -3,18 +3,13 @@ import { useNavigate } from "react-router";
 import letters from "../../lib/data/letters.json";
 import style from "../../styles/dashboard.module.css";
 import clsx from "clsx";
-import { useAuth } from "../../lib/auth/useAuth";
-import { API_BASE_URL } from "../../lib/api/api";
+import { useAuth } from "../../lib/context/auth/useAuth";
+import { useProgress } from "../../lib/context/progress/useProgress";
 import CircularProgress from "@mui/material/CircularProgress";
 
 type LessonStatus = "LOCKED" | "IN_PROGRESS" | "COMPLETED";
 
 const PARTS_PER_LESSON = 4;
-
-interface Progress {
-    familyId: number;
-    partCompletion: number;
-}
 
 function NavBar({ name, onLogout }: { name: string; onLogout: () => void }) {
     const [open, setOpen] = useState(false);
@@ -120,28 +115,13 @@ function LessonCard({ lessonNumber, amharicName, englishName, status, partsCompl
 
 export default function Dashboard() {
     const { currentUser, isLoading: authLoading, logout } = useAuth();
+    const { progress, isLoading: progressLoading } = useProgress();
     const navigate = useNavigate();
-    const [progress, setProgress] = useState<Progress | null>(null);
-    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (authLoading) return;
-
-        if (!currentUser) {
-            navigate("/login", { replace: true });
-            return;
-        }
-
-        fetch(`${API_BASE_URL}/v1/progress/me`, {
-            headers: { Authorization: `Bearer ${currentUser.token}` },
-        })
-            .then(async (response) => {
-                if (!response.ok) throw new Error(`Failed to load progress (${response.status})`);
-                return response.json();
-            })
-            .then((data: Progress) => setProgress(data))
-            .catch(() => setError("Couldn't load your progress. Please try logging in again."));
-    }, [currentUser, authLoading, navigate]);
+        if (!currentUser) navigate("/login", { replace: true });
+    }, [authLoading, currentUser, navigate]);
 
     const handleLogout = () => {
         logout();
@@ -150,11 +130,13 @@ export default function Dashboard() {
 
     if (!currentUser) return null;
 
-    if (error) {
+    if (authLoading || progressLoading) {
         return (
             <>
                 <NavBar name={currentUser.username} onLogout={handleLogout} />
-                <div className={style.container}><p>{error}</p></div>
+                <div className={style.container}>
+                        <CircularProgress size={70} aria-label="Loading" sx={{ color: 'var(--navbar-bg)'}}/>
+                </div>
             </>
         );
     }
@@ -163,9 +145,7 @@ export default function Dashboard() {
         return (
             <>
                 <NavBar name={currentUser.username} onLogout={handleLogout} />
-                <div className={style.container}>
-                        <CircularProgress size={70} aria-label="Loading" sx={{ color: 'var(--navbar-bg)'}}/>
-                </div>
+                <div className={style.container}><p>Couldn't load your progress. Please try logging in again.</p></div>
             </>
         );
     }
@@ -193,7 +173,7 @@ export default function Dashboard() {
                                 englishName={lesson.englishName}
                                 status={status}
                                 partsCompleted={partsCompleted}
-                                onClick={() => navigate(`/lesson/${lesson.id}`, { state: { recognitionDone: isFullyDone } })}
+                                onClick={() => navigate(`/lesson/${lesson.id}`)}
                             />
                         );
                     })}

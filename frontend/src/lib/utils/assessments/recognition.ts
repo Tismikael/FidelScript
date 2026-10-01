@@ -1,7 +1,7 @@
 // file for calculations regarding recognition calculations
-import lettersData from "../data/letters.json";
-import { RecognitionType } from "../constants/Lesson";
-import type { CLPair, Question, QuestionsList, Lesson } from "../constants/Lesson";
+import lettersData from "../../data/letters.json";
+import { RecognitionType } from "../../constants/Lesson";
+import type { CLPair, Question, QuestionsList, Lesson } from "../../constants/Lesson";
 
 
 export const OPTION_COUNT = 4;

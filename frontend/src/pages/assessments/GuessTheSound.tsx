@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import clsx from "clsx";
 import letters from "../../lib/data/letters.json";
 import { RecognitionType } from "../../lib/constants/Lesson";
 import type { Question } from "../../lib/constants/Lesson";
-import { PASS_MARK, calculateScore, generateAssessment } from "../../lib/assessments/recognition";
+import { PASS_MARK, calculateScore, generateAssessment } from "../../lib/utils/assessments/recognition";
 import speakerImage from "../../assets/_.jpeg";
 import style from "../../styles/assessments/guess.module.css";
 import { playSound } from "../../lib/audio/generateAudio";
-import * as helperLesson from "../../lib/assessments/lesson"
+import * as helperLesson from "../../lib/utils/assessments/lesson"
 import { updateUserProgress } from "../../lib/api/assessment.api";
-import { useAuth } from "../../lib/auth/useAuth";
+import { useLessonGuard } from "../../lib/context/progress/useLessonGuard";
+import { useProgress } from "../../lib/context/progress/useProgress";
 import { BackToNav } from "../../lib/utils/navigation";
 import { Navigation } from "../../lib/constants/Navigation";
 
@@ -19,11 +20,12 @@ import { Navigation } from "../../lib/constants/Navigation";
 export default function GuessTheSound() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const location = useLocation();
-    const { currentUser } = useAuth();
 
     const lessonId = Number(id);
-    const familyId = location.state?.familyId as number | undefined;
+    const { currentUser, progress, isReady } = useLessonGuard(lessonId);
+    const { refreshProgress } = useProgress();
+
+    const familyId = progress?.familyId;
     const isCurrentLesson = familyId !== undefined && lessonId === familyId;
 
     const lessonExists = letters.some((item) => item.id === lessonId);
@@ -65,11 +67,17 @@ export default function GuessTheSound() {
 
     useEffect(() => {
         if (passed && isCurrentLesson && currentUser) {
-            updateUserProgress(currentUser.token).catch((err) => {
-                console.error("Failed to record Guess the Sound completion:", err);
-            });
+            updateUserProgress(currentUser.token)
+                .then(() => refreshProgress())
+                .catch((err) => {
+                    console.error("Failed to record Guess the Sound completion:", err);
+                });
         }
-    }, [passed, isCurrentLesson, currentUser]);
+    }, [passed, isCurrentLesson, currentUser, refreshProgress]);
+
+    if (!isReady) {
+        return <div className={style.container}><p>Loading...</p></div>;
+    }
 
     return (
         <div className={style.container}>

@@ -1,6 +1,6 @@
 // file containing helper functions for lesson assessment
-import type { Lesson } from "../constants/Lesson";
-import lettersData from "../../lib/data/letters.json";
+import type { Lesson } from "../../constants/Lesson";
+import lettersData from "../../../lib/data/letters.json";
 
 const findLessonData = (id: number): Lesson | undefined => {
     const lesson: Lesson | undefined = lettersData.find((ld) => ld.id === id);
@@ -16,7 +16,7 @@ const generateLabelArray = (lesson: Lesson | undefined): string[] => {
 };
 const generateCharToPositionMap = (id: number): Map<string, number> => {
 
-    let resMap: Map<string, number> = new Map();
+    const resMap: Map<string, number> = new Map();
 
     const lessonData: Lesson | undefined = findLessonData(id);
 

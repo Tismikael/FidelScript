@@ -1,21 +1,14 @@
-import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import clsx from "clsx";
 import style from "../../styles/lesson.module.css";
 import { playSound } from "../../lib/audio/generateAudio";
 import type { Lesson } from "../../lib/constants/Lesson";
-import * as helperLesson from "../../lib/assessments/lesson";
-import { useAuth } from "../../lib/auth/useAuth";
-import { API_BASE_URL } from "../../lib/api/api";
+import * as helperLesson from "../../lib/utils/assessments/lesson";
+import { useLessonGuard } from "../../lib/context/progress/useLessonGuard";
 import { BackToNav } from "../../lib/utils/navigation";
 import { Navigation } from "../../lib/constants/Navigation";
 
 const PARTS_PER_LESSON = 4;
-
-interface Progress {
-    familyId: number;
-    partCompletion: number;
-}
 
 interface LetterCardProps {
     char: string;
@@ -71,37 +64,15 @@ function AssessmentCard({ title, description, completed, locked, lockedText, onS
 export default function Lesson() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { currentUser, isLoading: authLoading } = useAuth();
 
     const lessonId = Number(id);
     const lesson: Lesson | undefined = helperLesson.findLessonData(lessonId);
 
-    const [progress, setProgress] = useState<Progress | null>(null);
+    const { progress, isReady } = useLessonGuard(lessonId);
 
-    useEffect(() => {
-        if (authLoading) return;
-
-        if (!currentUser) {
-            navigate("/login", { replace: true });
-            return;
-        }
-
-        fetch(`${API_BASE_URL}/v1/progress/me`, {
-            headers: { Authorization: `Bearer ${currentUser.token}` },
-        })
-            .then(async (response) => {
-                if (!response.ok) throw new Error(`Failed to load progress (${response.status})`);
-                return response.json();
-            })
-            .then((data: Progress) => setProgress(data))
-            .catch(() => setProgress(null));
-    }, [currentUser, authLoading, navigate]);
-
-    if (authLoading || (!progress && currentUser)) {
+    if (!isReady) {
         return <div className={style.container}><p>Loading...</p></div>;
     }
-
-    if (!currentUser) return null;
 
     const familyId = progress?.familyId;
     const isPast = familyId !== undefined && lessonId < familyId;
@@ -114,7 +85,7 @@ export default function Lesson() {
 
     const navType = Navigation.dashboard;
 
-    const goToAssessment = (path: string) => navigate(path, { state: { familyId } });
+    const goToAssessment = (path: string) => navigate(path);
 
     return (
         <div className={style.container}>

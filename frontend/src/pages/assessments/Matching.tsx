@@ -1,12 +1,13 @@
 import { useState, useMemo } from "react";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import clsx from "clsx";
 import letters from "../../lib/data/letters.json";
 import type { Lesson } from "../../lib/constants/Lesson";
 import style from "../../styles/assessments/matching.module.css";
-import * as helperLesson from "../../lib/assessments/lesson"
+import * as helperLesson from "../../lib/utils/assessments/lesson"
 import { updateUserProgress } from "../../lib/api/assessment.api";
-import { useAuth } from "../../lib/auth/useAuth";
+import { useLessonGuard } from "../../lib/context/progress/useLessonGuard";
+import { useProgress } from "../../lib/context/progress/useProgress";
 import { BackToNav } from "../../lib/utils/navigation";
 import { Navigation } from "../../lib/constants/Navigation";
 
@@ -23,11 +24,12 @@ const shuffle = <T,>(items: T[]): T[] => {
 export default function Matching() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const location = useLocation();
-    const { currentUser } = useAuth();
 
     const lessonId = Number(id);
-    const familyId = location.state?.familyId as number | undefined;
+    const { currentUser, progress, isReady } = useLessonGuard(lessonId);
+    const { refreshProgress } = useProgress();
+
+    const familyId = progress?.familyId;
     const isCurrentLesson = familyId !== undefined && lessonId === familyId;
 
     const lesson: Lesson | undefined = letters.find((item) => item.id === lessonId);
@@ -85,11 +87,17 @@ export default function Matching() {
         setSubmitted(true);
 
         if (passed && isCurrentLesson && currentUser) {
-            updateUserProgress(currentUser.token).catch((err) => {
-                console.error("Failed to record Matching completion:", err);
-            });
+            updateUserProgress(currentUser.token)
+                .then(() => refreshProgress())
+                .catch((err) => {
+                    console.error("Failed to record Matching completion:", err);
+                });
         }
     };
+
+    if (!isReady) {
+        return <div className={style.container}><p>Loading...</p></div>;
+    }
 
     return (
         <div className={style.container}>
@@ -170,7 +178,7 @@ export default function Matching() {
                             {submitted && passed && (
                                 <button
                                     className={style.continue_button}
-                                    onClick={() => navigate(`/lesson/${lessonId}/recognition`, { state: { familyId } })}
+                                    onClick={() => navigate(`/lesson/${lessonId}/recognition`)}
                                 >
                                     Start Recognition
                                 </button>

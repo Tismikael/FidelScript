@@ -86,10 +86,12 @@
 
 .header_foreground_title {
     font-size: 3em;
+    line-height: normal;
 }
 
 .header_foreground_subtitle {
-    margin-top: 40px;
+    margin-top: 30px;
+    line-height: 1.1;
     font-size: 2em;
     font-weight: 500;
 }
@@ -112,8 +114,10 @@
     align-self: center;
     @media screen and (max-width: 640px) {
         display: grid;
-        grid-template-columns: repeat(1, 85%);
-        row-gap: 20px;
+        grid-template-columns: repeat(1, 80%);
+        align-items: flex-start;
+        justify-content: center;
+        margin-bottom: 40px;
     }
 }
 
